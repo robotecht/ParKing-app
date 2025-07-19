@@ -55,3 +55,7 @@ venv\Scripts\activate
 pip install flask flask_sqlalchemy flask_bootstrap
 
 ```
+**Run the flask container**
+```bash
+flask run
+```
