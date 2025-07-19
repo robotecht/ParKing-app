@@ -53,4 +53,5 @@ venv\Scripts\activate
 **Install Dependencies**
 ```bash
 pip install flask flask_sqlalchemy flask_bootstrap
+
 ```
