@@ -41,6 +41,7 @@ cd ParKing-app
 python -m venv venv
 ```
 **Activate the Virtual Environment**
+
 On Linux
 ```bash
 source venv/bin/activate
