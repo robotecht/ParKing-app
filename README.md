@@ -30,3 +30,26 @@ A simple web application to manage parking lots, built as part of the MAD I – 
 ## Start with the project
 
 **Clone the repo**
+
+```bash
+git clone git@github.com:robotecht/ParKing-app.git
+```
+
+**Navigate to the folder and create a virtual environment (recommended)**
+```bash
+cd ParKing-app
+python -m venv venv
+```
+**Activate the Virtual Environment**
+On Linux
+```bash
+source venv/bin/activate
+```
+On Windows
+```bash
+venv\Scripts\activate
+```
+**Install Dependencies**
+```bash
+pip install flask flask_sqlalchemy flask_bootstrap
+```
