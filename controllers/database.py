@@ -1,4 +1,8 @@
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect
+
+db = SQLAlchemy()
 
 class Admin(db.Model):
     #Admin - root access - It is the superuser of the app and requires no registration
@@ -39,3 +43,11 @@ class Reservation(db.Model):
     start_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     cost = db.Column(db.Float, nullable=False)
+
+def print_tables(app):
+    """Print the list of tables in the connected SQLite database."""
+    with app.app_context():
+        inspector = inspect(db.engine)
+        tables = inspector.get_table_names()
+        for table in tables:
+            print(f"Table created: {table}")
