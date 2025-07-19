@@ -13,3 +13,29 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     booking = db.relationship('Booking', backref='user', lazy=True)
+
+class ParkingLot(db.Model):
+    #Parking lot: It’s the physical space where the collection of parking spots are available for an area
+    id = db.Column(db.Integer, primary_key=True)
+    location = db.Column(db.String(120), nullable=False)
+    prices = db.Column(db.Float, nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    pincode = db.Column(db.String(10), nullable=False)
+    max_spots = db.Column(db.Integer, nullable=False)
+    spots = db.relationship('ParkingSpot', backref='parking_lot', lazy=True)
+
+class ParkingSpot(db.Model):
+    #Parking spot: The physical space for parking a 4-wheeler parking.
+    id = db.Column(db.Integer, primary_key=True)
+    lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
+    status = db.Column(db.String(1), nullable=False, default='A')  # A = available, O = occupied
+    booking = db.relationship('Booking', backref='parking_spot', lazy=True)
+
+class Reservation(db.Model):
+    #Reserve parking spot: Allocates parking spot as per the user requests
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    spot_id = db.Column(db.Integer, db.ForeignKey('parking_spot.id'), nullable=False)
+    start_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+    cost = db.Column(db.Float, nullable=False)
