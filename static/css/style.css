@@ -1,0 +1,104 @@
+body {
+    background: radial-gradient(
+        circle at 75% 25%,         /* Light/cyan starts bottom left */
+        #304ef5 0%,                 /* Light Cyan */
+        #1b37ae 30%,                /* Blue */
+        #7C3AED 55%,                /* Vivid Purple */
+        #EC4899 75%,                /* Hot Pink */
+        #FF8C42 100%                /* Orange edge */
+    ),
+    #0a1036;                        /* Fallback: dark indigo */
+    color: #1A237E;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    min-height: 100vh;
+    padding-top: 64px;    /* adjust if your navbar is taller/shorter */
+    padding-bottom: 60px; /* adjust for footer height */
+}
+
+
+.navbar {
+    background: linear-gradient(90deg, #1A237E 60%, #2196F3 100%) !important;
+    box-shadow: 0 3px 18px rgba(26,35,126,0.10);
+}
+.navbar-brand, .navbar-brand strong {
+    color: #fff !important;
+}
+
+.card {
+    background: #F6F7FB;
+    border-radius: 1.25rem;
+    border: 1px solid #E0E7FF;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #EC4899 70%, #FF8C42 100%);
+    border: none;
+    color: #fff;
+}
+.btn-primary:hover {
+    background: #2196F3;
+    color: #fff;
+}
+.btn-info {
+    background: #41E3F5;
+    color: #1A237E;
+    border: none;
+}
+
+input.form-control:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 0.12rem #7C3AED66;
+}
+.alert-danger {
+    background: #DC2626;
+    color: #fff;
+}
+.alert-success {
+    background: #41E3F5;
+    color: #1A237E;
+}
+
+.glass-header {
+    width: 100%;
+    background: transparent !important;  /* Fully transparent: no glass, no blur */
+    box-shadow: none;                    /* No shadow for a truly floating look */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: none;
+    color: #fff !important;
+    border-radius: 0;
+    z-index: 1040;
+    box-sizing: border-box;
+    margin: 0;
+}
+.navbar-brand, .navbar-brand strong {
+    color: #fff !important;
+    /* Optional: keep text shadow for readability */
+    text-shadow: 0 2px 10px rgba(30,35,65,0.22), 0 1px 1px rgba(0,0,0,0.12);
+    font-weight: 700;
+    font-size: 1.36rem;
+    letter-spacing: 0.02em;
+}
+
+
+
+
+.glass-footer {
+    width: 100%;
+    background: rgba(255,255,255,0.18);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+    backdrop-filter: blur(19px) saturate(140%);
+    -webkit-backdrop-filter: blur(19px) saturate(140%);
+    border-top: 1.5px solid rgba(255,255,255,0.18);
+    color: #1A237E;
+    letter-spacing: 0.08em;
+    border-radius: 1.25rem 1.25rem 0 0;
+    margin: 0;
+    z-index: 100;
+    font-size: 1rem;
+}
+
+/* Ensure no double border when used with Bootstrap */
+.footer, .glass-footer {
+    border-bottom: none;
+}

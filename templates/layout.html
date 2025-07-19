@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}ParKing App{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar glass-header navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='content/ParKing_logo_white.png') }}" alt="Logo" width="50" height="50" style="margin-right: 10px;">
+                <strong>ParKing</strong>
+            </a>
+        </div>
+    </nav>
+
+
+    <main class="container my-4">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="glass-footer fixed-bottom text-center py-2">
+    © 2025 ParKing App
+    </footer>
+
+</body>
+</html>

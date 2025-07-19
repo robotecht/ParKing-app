@@ -1,5 +1,5 @@
-from flask import Flask
-from controllers.database import db, print_tables
+from flask import Flask, render_template, request, redirect, url_for, flash
+from controllers.database import db, print_tables, User
 
 
 app = Flask(__name__)
@@ -10,12 +10,37 @@ app.config['SECRET_KEY'] = 'S8tEnpx6ifheXAstgiWRFB3X7O4BZq9iR3uJb0RdoCFBsMpgjWE3
 db.init_app(app)
 
 # Ensure tables are created BEFORE handling the first request
-@app.before_request
-def setup():
+with app.app_context():
     db.create_all()
     print("Database tables created.")
     # Show the table names in the terminal
     print_tables(app)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if len(username) == 0 or len(password) < 6:
+            flash('Please fill all fields correctly.', 'danger')
+            return render_template('signup.html')
+        if User.query.filter_by(username=username).first():
+            flash('Username already exists.', 'danger')
+            return render_template('signup.html')
+        user = User(username=username, password=password)
+        db.session.add(user)
+        db.session.commit()
+        flash('Account created! You can now log in.', 'success')
+        return redirect(url_for('login'))
+    return render_template('new_user.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    return "<h2>Login Page Coming Soon.</h2>"
 
 # Main entry (not needed for flask run, but keeps python app.py workable)
 if __name__ == "__main__":
