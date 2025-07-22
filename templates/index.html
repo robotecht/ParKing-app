@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="text-center mt-5">
-    <h1 class="mb-3" style="color:#314e70;">Welcome to ParKing App!</h1>
-    <p class="mb-4 text-muted">Manage your 4-wheeler parking easily.</p>
-    <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">Sign Up</a>
+<div class="min-vh-100 d-flex flex-column justify-content-center align-items-center text-center home-hero-adjust">
+    <h1 class="mb-3 home-title">Welcome to ParKing App!</h1>
+    <p class="mb-4 home-lead">Manage your 4-wheeler parking easily.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Log In</a>
 </div>
+
 {% endblock %}

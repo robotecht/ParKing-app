@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Login | ParKing{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height:75vh;">
+    <div class="card p-4" style="max-width: 350px; width: 100%; backdrop-filter: blur(8px); background: rgba(255,255,255,0.13); border: none;">
+        <h3 class="mb-4 text-center" style="color:#fff;">Log In</h3>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show mb-3" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" novalidate>
+            <div class="mb-3">
+                <label for="username" class="form-label text-light">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required maxlength="80" />
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label text-light">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required minlength="6" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Log In</button>
+        </form>
+        <div class="mt-3 text-center">
+            <span class="text-light">Don't have an account?</span>
+            <a href="{{ url_for('signup') }}" class="signup-login-link">Sign up</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

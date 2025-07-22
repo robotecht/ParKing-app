@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from controllers.database import db, print_tables, User
 
 
@@ -40,7 +40,18 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    return "<h2>Login Page Coming Soon.</h2>"
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if not user or user.password != password:
+            flash('Incorrect username or password.', 'danger')
+            return render_template('login.html')
+        # If login successful (expand as needed for sessions etc):
+        session['user_id'] = user.id
+        flash('Logged in successfully!', 'success')
+        return redirect(url_for('home'))
+    return render_template('login.html')
 
 # Main entry (not needed for flask run, but keeps python app.py workable)
 if __name__ == "__main__":
