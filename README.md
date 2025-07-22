@@ -27,6 +27,7 @@ A simple web application to manage parking lots, built as part of the MAD I – 
 - **Frontend:** Jinja2, HTML, CSS, Bootstrap
 - **Database:** SQLite (auto-created, no manual setup needed)
 
+![alt text](image.png)
 ## Start with the project
 
 **Clone the repo**
