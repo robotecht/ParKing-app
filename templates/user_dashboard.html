@@ -1,7 +1,64 @@
 {% extends "layout.html" %}
+
 {% block content %}
 <div class="container py-4">
+  <!-- Logout Button -->
+  <div class="d-flex justify-content-end mb-3">
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Log Out</a>
+  </div>
+  <h2 class="text-center mb-4">Welcome, {{ user.username }}</h2>
+  
+  <!-- Current Active Booking Section -->
+  <h4>Your Bookings</h4>
+  {% if bookings %}
+    <table class="table table-bordered mb-4">
+      <thead>
+        <tr>
+          <th>Parking Lot</th>
+          <th>Spot Number</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for booking in bookings %}
+        <tr>
+          <td>{{ booking.spot.parking_lot.location }}</td>
+          <td>{{ booking.spot.spot_number }}</td>
+          <td>{{ booking.start_time.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+          <td>{{ booking.end_time.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+          <td>
+            {% if booking.end_time > now %}
+              <span class="badge bg-success">Active</span>
+            {% else %}
+              <span class="badge bg-secondary">Finished</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if booking.end_time > now %}
+              <form action="{{ url_for('finish_parking', booking_id=booking.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Finish parking and release spot?');">
+                <button type="submit" class="btn btn-danger btn-sm">Finish</button>
+              </form>
+            {% else %}
+              <button class="btn btn-secondary btn-sm" disabled>Finished</button>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-secondary text-center">
+      You have no bookings yet.
+    </div>
+  {% endif %}
+
+  
   <h2 class="text-center mb-4">Available Parking Lots</h2>
+
+  <!-- Parking Lots Table -->
   <table class="table table-bordered table-hover align-middle">
     <thead class="table-light">
       <tr>
@@ -20,9 +77,7 @@
         <td>{{ lot.address }}</td>
         <td>{{ lot.pincode }}</td>
         <td>{{ lot.spots|length }}</td>
-        <td>
-          {{ lot.spots|selectattr('status','equalto','A')|list|length }}
-        </td>
+        <td>{{ lot.spots|selectattr('status','equalto','A')|list|length }}</td>
         <td>
           {% if lot.spots|selectattr('status','equalto','A')|list|length > 0 %}
             <a href="{{ url_for('book_lot', lot_id=lot.id) }}" class="btn btn-primary btn-sm">Book</a>

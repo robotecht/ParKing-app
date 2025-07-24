@@ -57,17 +57,64 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/user_dashboard', methods=['GET'])
+from datetime import datetime
+
+@app.route('/user_dashboard')
 def user_dashboard():
     user_id = session.get('user_id')
     if not user_id:
-        flash('Please log in to access the dashboard.', 'danger')
-        return redirect(url_for('login'))
+        flash("Please log in to view the dashboard.", "danger")
+        return redirect(url_for("login"))
 
-    # Import your models properly
-    lots = ParkingLot.query.all()  # Fetch parking lots from db
     user = User.query.get(user_id)
-    return render_template('user_dashboard.html', user=user, lots=lots)
+    lots = ParkingLot.query.all()
+
+      # Fetch all bookings for the user ordered by start_time descending
+    bookings = Reservation.query.filter_by(user_id=user_id).order_by(Reservation.start_time.desc()).all()
+
+    return render_template(
+        "user_dashboard.html",
+        user=user,
+        lots=lots,
+        bookings=bookings,
+        now=datetime.utcnow()   # Pass current time for booking logic
+    )
+
+
+@app.route('/logout')
+def logout():
+    session.clear()  # remove all session data — logs out the user
+    flash("You have been logged out.", "success")
+    return redirect(url_for('login'))  # redirect to login or home page
+
+
+
+@app.route('/finish_parking/<int:booking_id>', methods=['POST'])
+def finish_parking(booking_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("Please log in to finish your parking.", "danger")
+        return redirect(url_for("login"))
+
+    booking = Reservation.query.get_or_404(booking_id)
+
+    # Check booking ownership:
+    if booking.user_id != user_id:
+        flash("You cannot finish someone else's booking.", "danger")
+        return redirect(url_for("user_dashboard"))
+
+    # Update booking end time to now:
+    booking.end_time = datetime.utcnow()
+
+    # Set spot to available:
+    spot = ParkingSpot.query.get(booking.spot_id)
+    spot.status = 'A'
+
+    db.session.commit()
+
+    flash("Your parking session has been finished and spot is released.", "success")
+    return redirect(url_for("user_dashboard"))
+
 
 
 

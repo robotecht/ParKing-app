@@ -32,6 +32,7 @@ class ParkingSpot(db.Model):
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
     spot_number = db.Column(db.Integer, nullable=False) # Add spot_number field (should exist)
     status = db.Column(db.String(1), nullable=False, default='A')
+    reservations = db.relationship('Reservation', backref='spot', lazy=True)
 
 
 
@@ -45,6 +46,7 @@ class Reservation(db.Model):
     start_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
     cost = db.Column(db.Float, nullable=False)
+    user = db.relationship('User', backref='reservations', lazy=True)
 
 def print_tables(app):
     """Print the list of tables in the connected SQLite database."""
