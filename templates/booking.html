@@ -1,0 +1,37 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height:70vh;">
+    <div class="card p-4" style="max-width: 390px; width: 100%; backdrop-filter: blur(8px); background: rgba(255,255,255,0.13); border: none;">
+        <h4 class="mb-3 text-center" style="color:#1A237E;">Confirm Your Booking</h4>
+        <table class="table table-sm bg-light border mb-3">
+            <tr>
+                <th>Parking Lot:</th>
+                <td>{{ lot.location }}</td>
+            </tr>
+            <tr>
+                <th>Address:</th>
+                <td>{{ lot.address }}</td>
+            </tr>
+            <tr>
+                <th>Pincode:</th>
+                <td>{{ lot.pincode }}</td>
+            </tr>
+            <tr>
+                <th>Spot Number:</th>
+                <td>{{ spot.spot_number }}</td>
+            </tr>
+            <tr>
+                <th>Price:</th>
+                <td>₹{{ lot.prices }} (per hour)</td>
+            </tr>
+        </table>
+        <form method="post">
+            <button type="submit" class="btn btn-primary w-100">Book Spot</button>
+        </form>
+        <div class="mt-3 text-center">
+            <a href="{{ url_for('user_dashboard') }}" class="btn btn-link">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
