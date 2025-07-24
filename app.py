@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-from controllers.database import db, print_tables, User, ParkingLot, ParkingSpot, Reservation
+from controllers.database import db, print_tables, User, ParkingLot, ParkingSpot, Reservation, Admin
 from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
@@ -16,9 +17,112 @@ with app.app_context():
     # Show the table names in the terminal
     print_tables(app)
 
+    # Check if admin exists
+    admin = Admin.query.filter_by(username='iitm').first()
+    if not admin:
+        admin = Admin(
+            username='iitm',
+            # For simplicity, store plaintext or hash password:
+            # plaintext:
+            # password='admin123'
+            # hashed password (recommended for better practice):
+            password=generate_password_hash('iitm123')
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print("Admin user created with username 'admin' and default password 'admin123'")
+
 @app.route("/")
 def home():
     return render_template("index.html")
+
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if 'admin_id' in session:
+        return redirect(url_for('admin_dashboard'))
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        admin = Admin.query.filter_by(username=username).first()
+
+        if not admin or not check_password_hash(admin.password, password):
+            flash('Invalid username or password.', 'danger')
+            return render_template('admin_login.html')
+
+        session.clear()
+        session['admin_id'] = admin.id
+        flash('Logged in successfully as admin!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('admin_login.html')
+
+@app.route('/admin/logout')
+def admin_logout():
+    session.clear()
+    flash("Admin logged out.", "success")
+    return redirect(url_for('admin_login'))
+
+
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    if 'admin_id' not in session:
+        flash("Please log in as admin to access dashboard.", "danger")
+        return redirect(url_for('admin_login'))
+
+    # Example: Get all parking lots
+    parking_lots = ParkingLot.query.all()
+    users = User.query.all()
+
+    # Render admin dashboard template (you need to create it)
+    return render_template('admin_dashboard.html', lots=parking_lots, users=users)
+
+@app.route('/admin/lot/<int:lot_id>/edit', methods=['GET', 'POST'])
+def admin_edit_lot(lot_id):
+    # Ensure admin is logged in (check session)
+    if 'admin_id' not in session:
+        flash('Please login as admin.', 'danger')
+        return redirect(url_for('admin_login'))
+
+    lot = ParkingLot.query.get_or_404(lot_id)
+
+    if request.method == 'POST':
+        # Process form data to update the lot
+        lot.location = request.form.get('location', lot.location)
+        lot.address = request.form.get('address', lot.address)
+        lot.pincode = request.form.get('pincode', lot.pincode)
+        lot.prices = float(request.form.get('prices', lot.prices))
+        lot.max_spots = int(request.form.get('max_spots', lot.max_spots))
+
+        db.session.commit()
+        flash("Parking lot updated successfully.", "success")
+        return redirect(url_for('admin_dashboard'))
+
+    # For GET request, render edit form with existing lot data
+    return render_template('admin_edit_lot.html', lot=lot)
+@app.route('/admin/lot/<int:lot_id>/delete', methods=['POST'])
+def admin_delete_lot(lot_id):
+    if 'admin_id' not in session:
+        flash("Please log in as admin.", "danger")
+        return redirect(url_for('admin_login'))
+
+    lot = ParkingLot.query.get_or_404(lot_id)
+
+    # Only allow delete if no spots are occupied
+    occupied_spots = [spot for spot in lot.spots if spot.status == 'O']
+    if occupied_spots:
+        flash("Cannot delete this lot because some spots are occupied.", "danger")
+        return redirect(url_for('admin_dashboard'))
+
+    # Delete spots first (optional if cascade delete is not configured)
+    for spot in lot.spots:
+        db.session.delete(spot)
+
+    db.session.delete(lot)
+    db.session.commit()
+    flash(f"Parking lot '{lot.location}' has been deleted.", "success")
+    return redirect(url_for('admin_dashboard'))
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
