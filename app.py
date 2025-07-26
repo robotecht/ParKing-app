@@ -176,7 +176,7 @@ def user_dashboard():
 
       # Fetch all bookings for the user ordered by start_time descending
     bookings = Reservation.query.filter_by(user_id=user_id).order_by(Reservation.start_time.desc()).all()
-    # Prepare data with calculated duration and cost per booking
+    # Prepare data with calculated duration and cost per booking for user
     bookings_data = []
     now = datetime.utcnow()
     for booking in bookings:
