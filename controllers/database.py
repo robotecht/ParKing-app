@@ -44,7 +44,7 @@ class Reservation(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     spot_id = db.Column(db.Integer, db.ForeignKey('parking_spot.id'), nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=True)
     cost = db.Column(db.Float, nullable=False)
     user = db.relationship('User', backref='reservations', lazy=True)
 

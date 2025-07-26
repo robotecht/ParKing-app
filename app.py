@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from controllers.database import db, print_tables, User, ParkingLot, ParkingSpot, Reservation, Admin
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
+from math import ceil
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
@@ -175,13 +176,28 @@ def user_dashboard():
 
       # Fetch all bookings for the user ordered by start_time descending
     bookings = Reservation.query.filter_by(user_id=user_id).order_by(Reservation.start_time.desc()).all()
+    # Prepare data with calculated duration and cost per booking
+    bookings_data = []
+    now = datetime.utcnow()
+    for booking in bookings:
+        start = booking.start_time
+        end = booking.end_time or now  # If booking still active, calculate till now
+        duration_seconds = (end - start).total_seconds()
+        duration_hours = max(1, ceil(duration_seconds / 3600))  # Minimum 1 hour charge
+        total_cost = duration_hours * booking.cost  # Assuming booking.cost is hourly rate
+
+        bookings_data.append({
+            'booking': booking,
+            'duration_hours': duration_hours,
+            'total_cost': total_cost,
+        })
 
     return render_template(
         "user_dashboard.html",
         user=user,
         lots=lots,
-        bookings=bookings,
-        now=datetime.utcnow()   # Pass current time for booking logic
+        bookings=bookings_data,  # pass the prepared data list
+        now=now
     )
 
 
@@ -203,8 +219,8 @@ def finish_parking(booking_id):
     booking = Reservation.query.get_or_404(booking_id)
 
     # Check booking ownership:
-    if booking.user_id != user_id:
-        flash("You cannot finish someone else's booking.", "danger")
+    if booking.user_id != user_id or booking.end_time is not None:
+        flash("Invalid action.", "danger")
         return redirect(url_for("user_dashboard"))
 
     # Update booking end time to now:
@@ -257,14 +273,14 @@ def book_spot(spot_id):
 
         # Create reservation with a default booking period (e.g., 1 hour)
         start_time = datetime.utcnow()
-        end_time = start_time + timedelta(hours=1)
+        # end_time = start_time + timedelta(hours=1)
         cost = lot.prices
 
         reservation = Reservation(
             user_id=user_id,
             spot_id=spot.id,
             start_time=start_time,
-            end_time=end_time,
+            end_time=None,
             cost=cost
         )
         spot.status = 'O'  # mark spot occupied
