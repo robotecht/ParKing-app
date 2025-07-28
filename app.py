@@ -93,7 +93,32 @@ def admin_edit_lot(lot_id):
         lot.address = request.form.get('address', lot.address)
         lot.pincode = request.form.get('pincode', lot.pincode)
         lot.prices = float(request.form.get('prices', lot.prices))
-        lot.max_spots = int(request.form.get('max_spots', lot.max_spots))
+        new_max_spots = int(request.form.get('max_spots', lot.max_spots))
+
+        # Synchronize ParkingSpot entries with new max_spots
+        current_spots_count = len(lot.spots)
+
+        if new_max_spots > current_spots_count:
+            # Add new spots
+            for spot_num in range(current_spots_count + 1, new_max_spots + 1):
+                new_spot = ParkingSpot(
+                    lot_id=lot.id,
+                    spot_number=spot_num,
+                    status='A'  # Available by default
+                )
+                db.session.add(new_spot)
+
+        elif new_max_spots < current_spots_count:
+            # Remove extra spots if possible (not occupied)
+            spots_to_remove = [spot for spot in lot.spots if spot.spot_number > new_max_spots]
+            for spot in spots_to_remove:
+                if spot.status == 'O':  # Occupied
+                    flash(f"Cannot remove spot #{spot.spot_number} because it is currently occupied.", "danger")
+                    return redirect(url_for('admin_edit_lot', lot_id=lot.id))
+                else:
+                    db.session.delete(spot)
+
+        lot.max_spots = new_max_spots
 
         db.session.commit()
         flash("Parking lot updated successfully.", "success")
@@ -101,6 +126,7 @@ def admin_edit_lot(lot_id):
 
     # For GET request, render edit form with existing lot data
     return render_template('admin_edit_lot.html', lot=lot)
+
 @app.route('/admin/lot/<int:lot_id>/delete', methods=['POST'])
 def admin_delete_lot(lot_id):
     if 'admin_id' not in session:
