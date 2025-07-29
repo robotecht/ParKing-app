@@ -147,6 +147,31 @@ def admin_delete_lot(lot_id):
     flash(f"Parking lot '{lot.location}' has been deleted.", "success")
     return redirect(url_for('admin_dashboard'))
 
+@app.route('/admin/lot/add', methods=['GET', 'POST'])
+def admin_add_lot():
+    if 'admin_id' not in session:
+        flash('Please log in as admin.', 'danger')
+        return redirect(url_for('admin_login'))
+    if request.method == 'POST':
+        location = request.form['location']
+        address = request.form['address']
+        pincode = request.form['pincode']
+        prices = float(request.form['prices'])
+        max_spots = int(request.form['max_spots'])
+        lot = ParkingLot(location=location, address=address, pincode=pincode, prices=prices, max_spots=max_spots)
+        db.session.add(lot)
+        db.session.commit()
+        # Create parking spots for the new lot
+        for spot_num in range(1, max_spots + 1):
+            spot = ParkingSpot(lot_id=lot.id, spot_number=spot_num, status='A')
+            db.session.add(spot)
+        db.session.commit()
+        flash("New parking lot added.", "success")
+        return redirect(url_for('admin_dashboard'))
+    return render_template('admin_add_lot.html')
+
+
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
