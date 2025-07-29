@@ -1,96 +1,113 @@
 body {
     background: radial-gradient(
-        circle at 75% 25%,         /* Light/cyan starts bottom left */
-        #304ef5 0%,                 /* Light Cyan */
-        #1b37ae 30%,                /* Blue */
-        #7C3AED 55%,                /* Vivid Purple */
-        #EC4899 75%,                /* Hot Pink */
-        #FF8C42 100%                /* Orange edge */
+        circle at 60% 34%,
+        #22306c 0%,           /* Dark Cyan */
+        #1e4266 30%,          /* Deep Blue */
+        #43276f 45%,          /* Rich Purple */
+        #7A2242 75%,          /* Deep Plum */
+        #a51f5e 100%          /* Muted Dark Burnt Orange */
     ),
-    #0a1036;                        /* Fallback: dark indigo */
-    color: #1A237E;
+    #0a1036;
+    color: #fff; /* Force all body text to pure white */
     font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
     min-height: 100vh;
-    padding-top: 64px;    /* adjust if your navbar is taller/shorter */
-    padding-bottom: 60px; /* adjust for footer height */
+    padding-top: 64px;
+    padding-bottom: 60px;
 }
 
+/* Universal text outside containers force to white */
+p,
+.home-lead, 
+.lead,
+li,
+span,
+div:not(.card):not(.glass-footer):not(.glass-header) {
+    color: #fff !important;
+}
 
+/* Headings should be pure white for extra readability */
+h1, h2, h3, h4, h5, h6 {
+    color: #fff !important;
+    text-shadow: 0 2px 16px rgba(20,20,80,0.36);
+}
+
+/* Navbar styles */
 .navbar {
-    background: linear-gradient(90deg, #1A237E 60%, #2196F3 100%) !important;
-    box-shadow: 0 3px 18px rgba(26,35,126,0.10);
+    background: linear-gradient(90deg, #191b37 60%, #1b72a1 100%) !important;
+    box-shadow: 0 3px 18px rgba(11,10,67,0.14);
 }
 .navbar-brand, .navbar-brand strong {
     color: #fff !important;
-}
-
-.card {
-    background: #F6F7FB;
-    border-radius: 1.25rem;
-    border: 1px solid #E0E7FF;
-}
-
-.btn-primary {
-    background: linear-gradient(90deg, #EC4899 70%, #FF8C42 100%);
-    border: none;
-    color: #fff;
-}
-.btn-primary:hover {
-    background: #2196F3;
-    color: #fff;
-}
-.btn-info {
-    background: #41E3F5;
-    color: #1A237E;
-    border: none;
-}
-
-input.form-control:focus {
-    border-color: #7C3AED;
-    box-shadow: 0 0 0 0.12rem #7C3AED66;
-}
-.alert-danger {
-    background: #DC2626;
-    color: #fff;
-}
-.alert-success {
-    background: #41E3F5;
-    color: #1A237E;
-}
-
-.glass-header {
-    width: 100%;
-    background: transparent !important;  /* Fully transparent: no glass, no blur */
-    box-shadow: none;                    /* No shadow for a truly floating look */
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom: none;
-    color: #fff !important;
-    border-radius: 0;
-    z-index: 1040;
-    box-sizing: border-box;
-    margin: 0;
-}
-.navbar-brand, .navbar-brand strong {
-    color: #fff !important;
-    /* Optional: keep text shadow for readability */
-    text-shadow: 0 2px 10px rgba(30,35,65,0.22), 0 1px 1px rgba(0,0,0,0.12);
+    text-shadow: 0 2px 10px rgba(30,35,65,0.25), 0 1px 1px rgba(0,0,0,0.16);
     font-weight: 700;
     font-size: 1.36rem;
     letter-spacing: 0.02em;
 }
 
+/* Card styles */
+.card {
+    background: #232544;
+    border-radius: 1.25rem;
+    border: 1px solid #2e385b;
+    color: #f1effa;
+}
 
+/* Button styles */
+.btn-primary {
+    background: linear-gradient(90deg, #3d157f 30%, #a91860 100%);
+    border: none;
+    color: #fff !important;
+}
+.btn-primary:hover {
+    background: linear-gradient(60deg, #a91860 10%, #3d157f 100%);
+    color: #fff !important;
+}
+.btn-info {
+    background: #304ef5;
+    color: #fff;
+    border: none;
+}
 
+/* Form input focus styles */
+input.form-control:focus {
+    border-color: #7C3AED;
+    box-shadow: 0 0 0 0.12rem #7C3AED99;
+}
 
+/* Alerts */
+.alert-danger {
+    background: #530317;
+    color: #fff;
+}
+.alert-success {
+    background: #401974;
+    color: #fff;
+}
+
+/* Glassmorphism header */
+.glass-header {
+    width: 100%;
+    background: rgba(22,26,38,0.72) !important;
+    box-shadow: 0 1px 14px 0 rgba(20,30,80,0.15);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border-bottom: none;
+    color: #d1e8ff;
+    border-radius: 0;
+    z-index: 1040;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+/* Glassmorphism footer */
 .glass-footer {
     width: 100%;
-    background: rgba(255,255,255,0.18);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
-    backdrop-filter: blur(19px) saturate(140%);
-    -webkit-backdrop-filter: blur(19px) saturate(140%);
-    border-top: 1.5px solid rgba(255,255,255,0.18);
-    color: #1A237E;
+    background: rgba(20,30,45,0.42);
+    box-shadow: 0 8px 32px 0 rgba(19, 24, 41, 0.26);
+    backdrop-filter: blur(14px) saturate(110%);
+    -webkit-backdrop-filter: blur(14px) saturate(110%);
+    border-top: 1.5px solid rgba(130,130,185,0.09);
+    color: #d1e8ff;
     letter-spacing: 0.08em;
     border-radius: 1.25rem 1.25rem 0 0;
     margin: 0;
@@ -98,65 +115,48 @@ input.form-control:focus {
     font-size: 1rem;
 }
 
-/* Ensure no double border when used with Bootstrap */
+/* Remove double border with Bootstrap */
 .footer, .glass-footer {
     border-bottom: none;
 }
 
-/* Lighten main titles and headings */
-.home-title, h1 {
-    color: #fff !important;              /* Pure white */
-    text-shadow: 0 2px 14px rgba(50,60,140,0.21); /* Subtle glow for extra readability */
-}
-
-/* Lighter text for subtitles and lead paragraphs */
-.home-lead, .lead, p {
-    color: #F1F1FB !important;           /* Very pale off-white */
-    text-shadow: 0 1px 10px rgba(30,40,100,0.10);
-}
-
-/* Lighten any links/buttons if necessary */
+/* Link and Button link styles */
 a, .btn-link {
-    color: #EDE7F6 !important;           /* Soft lavender/white */
+    color: #C3BFFF !important;
 }
-
 .btn.btn-primary {
     color: #fff !important;
 }
 
-
+/* Login/signup links */
 .signup-login-link {
-    color: #81d4f0 !important;      /* Bold dark blue/charcoal, high contrast */
+    color: #98e0fa !important;
     font-weight: 600;
-    text-decoration: underline;     /* Optional, for clear affordance */
+    text-decoration: underline;
 }
 .signup-login-link:hover {
-    color: #1A237E !important;      /* Slightly stronger blue on hover */
+    color: #C3BFFF !important;
 }
-
 .login-link {
-    color: #0c132d !important;      /* Bold dark blue/charcoal, high contrast */
+    color: #7f8aa8 !important;
     font-weight: 600;
-    text-decoration: underline;     /* Optional, for clear affordance */
+    text-decoration: underline;
 }
 .login-link:hover {
-    color: #1A237E !important;      /* Slightly stronger blue on hover */
+    color: #C3BFFF !important;
 }
 
-
+/* Hero section adjustments */
 .home-hero-adjust {
     min-height: 100vh;
-    padding-top: 0vh;      /* push down less from the top */
-    padding-bottom: 18vh;  /* more space at bottom than top, adjusts upward */
+    padding-top: 0vh;
+    padding-bottom: 18vh;
 }
 .home-title, h1 {
     color: #fff !important;
-    text-shadow: 0 3px 16px rgba(0,0,0,0.22);
+    text-shadow: 0 3px 16px rgba(0,0,0,0.26);
 }
 .home-lead, .lead, p {
-    color: #f7fafe !important;
-    text-shadow: 0 2px 10px rgba(30,40,100,0.13);
+    color: #fff !important;
+    text-shadow: 0 2px 10px rgba(30,40,100,0.14);
 }
-
-
-

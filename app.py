@@ -7,6 +7,7 @@ from math import ceil
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
 app.config['SECRET_KEY'] = 'S8tEnpx6ifheXAstgiWRFB3X7O4BZq9iR3uJb0RdoCFBsMpgjWE3KyUGBEG8FJ4Q'
+app.config['DEBUG'] = True
 
 # Initialize the database
 db.init_app(app)
@@ -23,15 +24,11 @@ with app.app_context():
     if not admin:
         admin = Admin(
             username='iitm',
-            # For simplicity, store plaintext or hash password:
-            # plaintext:
-            # password='admin123'
-            # hashed password (recommended for better practice):
             password=generate_password_hash('iitm123')
         )
         db.session.add(admin)
         db.session.commit()
-        print("Admin user created with username 'admin' and default password 'admin123'")
+        print("Admin user created")
 
 @app.route("/")
 def home():
