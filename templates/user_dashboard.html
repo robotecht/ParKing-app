@@ -1,19 +1,45 @@
 {% extends "layout.html" %}
-
 {% block content %}
-<div class="container py-4">
-  <!-- Logout Button -->
-  <div class="d-flex justify-content-end mb-3">
-    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm">Log Out</a>
-  </div>
-  <h2 class="text-center mb-4">Welcome, {{ user.username }}</h2>
-  
-  
-  <h2 class="text-center mb-4">Available Parking Lots</h2>
 
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+    <!-- Centered Heading -->
+    <h2 class="m-0 position-absolute top-50 start-50 translate-middle text-center" 
+        style="color:black; font-weight:700; font-size:1.75rem; text-transform: uppercase;">
+       Welcome, {{ user.username }}
+    </h2>
+
+    <!-- Right-aligned Log Out button -->
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm ms-auto">Log Out</a>
+  </div>
+</div>
+
+    <h4 class="mb-3 text-center" style="color:black; font-weight: 500; font-size: 1.75rem;">
+      Available Parking Lots
+    </h4>
+  <style>
+  .frosted-table {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .frosted-table th,
+  .frosted-table td {
+    background: rgba(255, 255, 255, 0.2);
+    color: #000;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+  }
+</style>
   <!-- Parking Lots Table -->
-  <table class="table table-bordered table-hover align-middle">
-    <thead class="table-light">
+  <table class="table table-bordered table-hover align-middle frosted-table">
+    <thread>
       <tr>
         <th>Location</th>
         <th>Address</th>
@@ -47,16 +73,16 @@
   </table>
 
   <!-- Current Active Booking Section -->
-  <h4>Your Bookings</h4>
+    <h4 class="mt-5 mb-3 text-center" style="color:black; font-weight: 500; font-size: 1.75rem;">Your Bookings</h4>
   {% if bookings %}
-    <table class="table table-bordered mb-4">
+    <table class="table table-bordered mb-4 frosted-table">
       <thead>
         <tr>
           <th>Parking Lot</th>
           <th>Spot Number</th>
           <th>Start Time</th>
           <th>End Time</th>
-           <th>Duration (hrs)</th>         
+          <th>Duration (hrs)</th>         
           <th>Total Cost (₹)</th>         
           <th>Status</th>
           <th>Actions</th>
@@ -95,7 +121,6 @@
             {% endif %}
           </td>
         </tr>
-
       {% endfor %}
       </tbody>
     </table>
@@ -104,7 +129,5 @@
       You have no bookings yet.
     </div>
   {% endif %}
-
-  
 </div>
 {% endblock %}

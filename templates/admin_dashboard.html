@@ -1,13 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Admin Dashboard</h2>
-    <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger btn-sm">Log Out</a>
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 position-relative">
+    <h2 class="m-0 position-absolute top-50 start-50 translate-middle text-center" 
+        style="color:black; font-weight:700; font-size:1.75rem;">
+      ADMIN DASHBOARD
+    </h2>
+    <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger btn-sm ms-auto">Log Out</a>
   </div>
 
-  <h4>Parking Lots</h4>
-  <table class="table table-bordered mb-4">
+  <!-- Parking Lots -->
+  <h4 class="mb-3 text-center" style="color:black; font-weight: 500; font-size: 1.75rem;">Parking Lots</h4>
+  <table class="table table-bordered mb-4 frosted-glass">
     <thead>
       <tr>
         <th>Location</th>
@@ -20,18 +26,21 @@
     </thead>
     <tbody>
       {% for lot in lots %}
+      {% set occupied_spots = lot.spots | selectattr('status', 'equalto', 'O') | list | length %}
       <tr>
         <td>{{ lot.location }}</td>
         <td>{{ lot.address }}</td>
         <td>{{ lot.pincode }}</td>
         <td>₹{{ lot.prices }}</td>
         <td>{{ lot.max_spots }}</td>
-        <td>
-          <a href="{{ url_for('admin_edit_lot', lot_id=lot.id) }}" class="btn btn-sm btn-warning">Edit</a>
-          {% set occupied_spots = lot.spots|selectattr('status', 'equalto', 'O')|list|length %}
+        <td class="d-flex gap-1">
           {% if occupied_spots == 0 %}
-            <a href="{{ url_for('admin_delete_lot', lot_id=lot.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Confirm delete this parking lot?')">Delete</a>
+            <a href="{{ url_for('admin_edit_lot', lot_id=lot.id) }}" class="btn btn-sm btn-warning">Edit</a>
+            <form action="{{ url_for('admin_delete_lot', lot_id=lot.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this lot?');" style="display:inline;">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
           {% else %}
+            <button class="btn btn-sm btn-secondary" disabled>Edit</button>
             <button class="btn btn-sm btn-secondary" disabled>Delete</button>
           {% endif %}
         </td>
@@ -40,19 +49,187 @@
     </tbody>
   </table>
 
-  <a href="{{ url_for('admin_add_lot') }}" class="btn btn-success mb-3">Add New Lot</a>
+  <a href="{{ url_for('admin_add_lot') }}" class="btn btn-success mb-4">Add New Lot</a>
+
+  <!-- Registered Users -->
+<h4 class="mb-3 text-center" style="color:black; font-weight: 500; font-size: 1.75rem;">Registered Users</h4>
+<table class="table table-bordered frosted-glass mb-5">
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Total Amount Due</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.username }}</td>
+      <td>₹{{ user_payments[user.id] }}</td>
+      <td>
+        <a href="{{ url_for('admin_dashboard') }}?user_id={{ user.id }}" class="btn btn-info btn-sm">
+          View Bookings
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 
-  <h4>Registered Users</h4>
-  <table class="table table-bordered">
-    <thead>
-      <tr><th>Username</th></tr>
-    </thead>
-    <tbody>
-      {% for user in users %}
-      <tr><td>{{ user.username }}</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <!-- Selected User Bookings -->
+  {% if selected_user %}
+    <h4 class="mb-3 text-center mt-5" style="color:black; font-weight: 500; font-size: 1.75rem;">
+      BOOKINGS FOR {{ selected_user.username.upper() }}
+    </h4>
+
+    {% if user_bookings %}
+      <table class="table table-bordered frosted-glass mb-5">
+        <thead>
+          <tr>
+            <th>Parking Lot</th>
+            <th>Spot Number</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for booking in user_bookings %}
+          <tr>
+            <td>{{ booking.spot.parking_lot.location }}</td>
+            <td>{{ booking.spot.spot_number }}</td>
+            <td>{{ booking.start_time }}</td>
+            <td>{{ booking.end_time if booking.end_time else 'Active' }}</td>
+            <td>
+              {% if booking.end_time %}
+                <span class="badge bg-secondary">Finished</span>
+              {% else %}
+                <span class="badge bg-success">Active</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info text-center">No bookings found for this user.</div>
+    {% endif %}
+  {% endif %}
+
+  <!-- Chart -->
+  <h4 class="mt-5 mb-3 text-center" style="color:black; font-weight: 500; font-size: 1.75rem;">
+    Parking Spot Usage per Lot
+  </h4>
+  <div class="mx-auto frosted-glass p-5 rounded shadow-sm" style="max-width: 1050px; color: black;">
+    <div class="d-flex justify-content-end mb-4">
+      <button id="toggleView" class="btn btn-outline-primary btn-sm">Toggle Stacked View</button>
+    </div>
+    <canvas id="lotChart" height="225" style="max-width: 100%;"></canvas>
+  </div>
+
+  <!-- Frosted Glass Style -->
+  <style>
+    .frosted-glass {
+      background: rgba(255, 255, 255, 0.646);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      color: black !important;
+      border-radius: 1rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .frosted-glass, .frosted-glass * {
+      color: black !important;
+    }
+  </style>
+
+  <!-- Chart Script -->
+  <script>
+    const ctx = document.getElementById('lotChart').getContext('2d');
+
+    const data = {
+      labels: {{ lot_labels|tojson|safe }},
+      datasets: [
+        {
+          label: 'Occupied Spots',
+          data: {{ occupied_data|tojson|safe }},
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1
+        },
+        {
+          label: 'Available Spots',
+          data: {{ available_data|tojson|safe }},
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }
+      ]
+    };
+
+    const options = {
+      responsive: true,
+      plugins: {
+        title: { display: false },
+        legend: { labels: { color: 'black' } }
+      },
+      scales: {
+        x: {
+          stacked: false,
+          ticks: { color: 'black' },
+          grid: { color: 'rgba(0,0,0,0.1)' },
+          title: {
+            display: true,
+            text: 'PARKING LOTS',
+            color: 'black',
+            font: {
+              size: 14,
+              weight: 'normal',
+              family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+              style: 'normal',
+              lineHeight: 1.2,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase'
+            }
+          }
+        },
+        y: {
+          beginAtZero: true,
+          stacked: false,
+          ticks: { color: 'black' },
+          grid: { color: 'rgba(0,0,0,0.1)' },
+          title: {
+            display: true,
+            text: 'NUMBER OF SPOTS',
+            color: 'black',
+            font: {
+              size: 14,
+              weight: 'normal',
+              family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+              style: 'normal',
+              lineHeight: 1.2,
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase'
+            }
+          }
+        }
+      }
+    };
+
+    const lotChart = new Chart(ctx, {
+      type: 'bar',
+      data: data,
+      options: options
+    });
+
+    document.getElementById('toggleView').addEventListener('click', () => {
+      const isStacked = lotChart.options.scales.x.stacked;
+      lotChart.options.scales.x.stacked = !isStacked;
+      lotChart.options.scales.y.stacked = !isStacked;
+      lotChart.update();
+    });
+  </script>
+
 </div>
 {% endblock %}

@@ -16,7 +16,6 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     print("Database tables created.")
-    # Show the table names in the terminal
     print_tables(app)
 
     # Check if admin exists
@@ -61,23 +60,62 @@ def admin_logout():
     flash("Admin logged out.", "success")
     return redirect(url_for('admin_login'))
 
-
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if 'admin_id' not in session:
         flash("Please log in as admin to access dashboard.", "danger")
         return redirect(url_for('admin_login'))
 
-    # Example: Get all parking lots
-    parking_lots = ParkingLot.query.all()
+    lots = ParkingLot.query.all()
     users = User.query.all()
 
-    # Render admin dashboard template (you need to create it)
-    return render_template('admin_dashboard.html', lots=parking_lots, users=users)
+    lot_labels = []
+    occupied_data = []
+    available_data = []
+
+    for lot in lots:
+        lot_labels.append(lot.location)
+        occupied_spots = sum(1 for spot in lot.spots if spot.status == 'O')
+        available_spots = lot.max_spots - occupied_spots
+        occupied_data.append(occupied_spots)
+        available_data.append(available_spots)
+
+    # Calculate amount to pay for each user
+    user_payments = {}
+    for user in users:
+        total_payment = 0.0
+        bookings = Reservation.query.filter_by(user_id=user.id).all()
+        for booking in bookings:
+            if booking.end_time:  # only if finished
+                duration = (booking.end_time - booking.start_time).total_seconds() / 3600
+                rate = booking.spot.parking_lot.prices  # price per hour
+                total_payment += duration * rate
+        user_payments[user.id] = round(total_payment, 2)
+
+    # Get selected user ID from query parameters
+    user_id = request.args.get('user_id')
+    selected_user = None
+    user_bookings = []
+
+    if user_id:
+        selected_user = User.query.get(user_id)
+        if selected_user:
+            user_bookings = Reservation.query.filter_by(user_id=user_id).order_by(Reservation.start_time.desc()).all()
+
+    return render_template(
+        'admin_dashboard.html',
+        lots=lots,
+        users=users,
+        lot_labels=lot_labels,
+        occupied_data=occupied_data,
+        available_data=available_data,
+        selected_user=selected_user,
+        user_bookings=user_bookings,
+        user_payments=user_payments  # pass to template
+    )
 
 @app.route('/admin/lot/<int:lot_id>/edit', methods=['GET', 'POST'])
 def admin_edit_lot(lot_id):
-    # Ensure admin is logged in (check session)
     if 'admin_id' not in session:
         flash('Please login as admin.', 'danger')
         return redirect(url_for('admin_login'))
@@ -85,18 +123,15 @@ def admin_edit_lot(lot_id):
     lot = ParkingLot.query.get_or_404(lot_id)
 
     if request.method == 'POST':
-        # Process form data to update the lot
         lot.location = request.form.get('location', lot.location)
         lot.address = request.form.get('address', lot.address)
         lot.pincode = request.form.get('pincode', lot.pincode)
         lot.prices = float(request.form.get('prices', lot.prices))
         new_max_spots = int(request.form.get('max_spots', lot.max_spots))
 
-        # Synchronize ParkingSpot entries with new max_spots
         current_spots_count = len(lot.spots)
 
         if new_max_spots > current_spots_count:
-            # Add new spots
             for spot_num in range(current_spots_count + 1, new_max_spots + 1):
                 new_spot = ParkingSpot(
                     lot_id=lot.id,
@@ -104,12 +139,10 @@ def admin_edit_lot(lot_id):
                     status='A'  # Available by default
                 )
                 db.session.add(new_spot)
-
         elif new_max_spots < current_spots_count:
-            # Remove extra spots if possible (not occupied)
             spots_to_remove = [spot for spot in lot.spots if spot.spot_number > new_max_spots]
             for spot in spots_to_remove:
-                if spot.status == 'O':  # Occupied
+                if spot.status == 'O':
                     flash(f"Cannot remove spot #{spot.spot_number} because it is currently occupied.", "danger")
                     return redirect(url_for('admin_edit_lot', lot_id=lot.id))
                 else:
@@ -121,7 +154,6 @@ def admin_edit_lot(lot_id):
         flash("Parking lot updated successfully.", "success")
         return redirect(url_for('admin_dashboard'))
 
-    # For GET request, render edit form with existing lot data
     return render_template('admin_edit_lot.html', lot=lot)
 
 @app.route('/admin/lot/<int:lot_id>/delete', methods=['POST'])
@@ -132,18 +164,17 @@ def admin_delete_lot(lot_id):
 
     lot = ParkingLot.query.get_or_404(lot_id)
 
-    # Only allow delete if no spots are occupied
     occupied_spots = [spot for spot in lot.spots if spot.status == 'O']
     if occupied_spots:
         flash("Cannot delete this lot because some spots are occupied.", "danger")
         return redirect(url_for('admin_dashboard'))
 
-    # Delete spots first (optional if cascade delete is not configured)
     for spot in lot.spots:
         db.session.delete(spot)
 
     db.session.delete(lot)
     db.session.commit()
+
     flash(f"Parking lot '{lot.location}' has been deleted.", "success")
     return redirect(url_for('admin_dashboard'))
 
@@ -152,6 +183,7 @@ def admin_add_lot():
     if 'admin_id' not in session:
         flash('Please log in as admin.', 'danger')
         return redirect(url_for('admin_login'))
+
     if request.method == 'POST':
         location = request.form['location']
         address = request.form['address']
@@ -161,17 +193,16 @@ def admin_add_lot():
         lot = ParkingLot(location=location, address=address, pincode=pincode, prices=prices, max_spots=max_spots)
         db.session.add(lot)
         db.session.commit()
-        # Create parking spots for the new lot
+
         for spot_num in range(1, max_spots + 1):
             spot = ParkingSpot(lot_id=lot.id, spot_number=spot_num, status='A')
             db.session.add(spot)
         db.session.commit()
+
         flash("New parking lot added.", "success")
         return redirect(url_for('admin_dashboard'))
+
     return render_template('admin_add_lot.html')
-
-
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -187,12 +218,10 @@ def signup():
         user = User(username=username, password=password)
         db.session.add(user)
         db.session.commit()
-        print(f"New user added to the database: username='{username}', password='{password}'") # Debugging entry
+        print(f"New user added to the database: username='{username}', password='{password}'")  # Debug
         flash('Account created! You can now log in.', 'success')
         return redirect(url_for('login'))
     return render_template('new_user.html')
-
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -203,14 +232,10 @@ def login():
         if not user or user.password != password:
             flash('Incorrect username or password.', 'danger')
             return render_template('login.html')
-        # Login successful; save user session and redirect to dashboard
         session['user_id'] = user.id
         flash('Logged in successfully!', 'success')
-        return redirect(url_for('user_dashboard'))  # <-- redirect to dashboard
+        return redirect(url_for('user_dashboard'))
     return render_template('login.html')
-
-
-from datetime import datetime
 
 @app.route('/user_dashboard')
 def user_dashboard():
@@ -222,17 +247,15 @@ def user_dashboard():
     user = User.query.get(user_id)
     lots = ParkingLot.query.all()
 
-      # Fetch all bookings for the user ordered by start_time descending
     bookings = Reservation.query.filter_by(user_id=user_id).order_by(Reservation.start_time.desc()).all()
-    # Prepare data with calculated duration and cost per booking for user
     bookings_data = []
     now = datetime.utcnow()
     for booking in bookings:
         start = booking.start_time
-        end = booking.end_time or now  # If booking still active, calculate till now
+        end = booking.end_time or now
         duration_seconds = (end - start).total_seconds()
-        duration_hours = max(1, ceil(duration_seconds / 3600))  # Minimum 1 hour charge
-        total_cost = duration_hours * booking.cost  # Assuming booking.cost is hourly rate
+        duration_hours = max(1, ceil(duration_seconds / 3600))
+        total_cost = duration_hours * booking.cost
 
         bookings_data.append({
             'booking': booking,
@@ -244,18 +267,15 @@ def user_dashboard():
         "user_dashboard.html",
         user=user,
         lots=lots,
-        bookings=bookings_data,  # pass the prepared data list
+        bookings=bookings_data,
         now=now
     )
 
-
 @app.route('/logout')
 def logout():
-    session.clear()  # remove all session data — logs out the user
+    session.clear()
     flash("You have been logged out.", "success")
-    return redirect(url_for('login'))  # redirect to login or home page
-
-
+    return redirect(url_for('login'))
 
 @app.route('/finish_parking/<int:booking_id>', methods=['POST'])
 def finish_parking(booking_id):
@@ -266,25 +286,19 @@ def finish_parking(booking_id):
 
     booking = Reservation.query.get_or_404(booking_id)
 
-    # Check booking ownership:
     if booking.user_id != user_id or booking.end_time is not None:
         flash("Invalid action.", "danger")
         return redirect(url_for("user_dashboard"))
 
-    # Update booking end time to now:
     booking.end_time = datetime.utcnow()
-
-    # Set spot to available:
-    spot = ParkingSpot.query.get(booking.spot_id)
-    spot.status = 'A'
-
     db.session.commit()
 
-    flash("Your parking session has been finished and spot is released.", "success")
+    spot = ParkingSpot.query.get(booking.spot_id)
+    spot.status = 'A'
+    db.session.commit()
+
+    flash("Your parking session has been finished.", "success")
     return redirect(url_for("user_dashboard"))
-
-
-
 
 @app.route('/book_lot/<int:lot_id>', methods=['GET'])
 def book_lot(lot_id):
@@ -342,13 +356,9 @@ def book_spot(spot_id):
     # GET request: show booking confirmation page
     return render_template('booking.html', spot=spot, lot=lot)
 
-
-
-
-# Main entry (not needed for flask run, but keeps python app.py workable)
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         print("Database tables created [via __main__].")
         print_tables(app)
-    app.run()
+    app.run(debug=True)

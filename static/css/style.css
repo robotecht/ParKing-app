@@ -1,162 +1,198 @@
+/* === Global Background and Base Styles === */
 body {
-    background: radial-gradient(
-        circle at 60% 34%,
-        #22306c 0%,           /* Dark Cyan */
-        #1e4266 30%,          /* Deep Blue */
-        #43276f 45%,          /* Rich Purple */
-        #7A2242 75%,          /* Deep Plum */
-        #a51f5e 100%          /* Muted Dark Burnt Orange */
+  background: radial-gradient(
+      circle at 60% 34%,
+      #22306c 0%,
+      #1e4266 30%,
+      #43276f 45%,
+      #7a2242 75%,
+      #a51f5e 100%
     ),
     #0a1036;
-    color: #fff; /* Force all body text to pure white */
-    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-    min-height: 100vh;
-    padding-top: 64px;
-    padding-bottom: 60px;
+  color: #fff;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  min-height: 100vh;
+  padding-top: 64px;
+  padding-bottom: 60px;
 }
 
-/* Universal text outside containers force to white */
+/* === Text & Headings === */
 p,
-.home-lead, 
+.home-lead,
 .lead,
 li,
 span,
 div:not(.card):not(.glass-footer):not(.glass-header) {
-    color: #fff !important;
+  color: #fff !important;
 }
 
-/* Headings should be pure white for extra readability */
-h1, h2, h3, h4, h5, h6 {
-    color: #fff !important;
-    text-shadow: 0 2px 16px rgba(20,20,80,0.36);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #fff !important;
+  text-shadow: 0 2px 16px rgba(20, 20, 80, 0.36);
 }
 
-/* Navbar styles */
+/* === Navbar === */
 .navbar {
-    background: linear-gradient(90deg, #191b37 60%, #1b72a1 100%) !important;
-    box-shadow: 0 3px 18px rgba(11,10,67,0.14);
+  background: linear-gradient(90deg, #191b37 60%, #1b72a1 100%) !important;
+  box-shadow: 0 3px 18px rgba(11, 10, 67, 0.14);
 }
-.navbar-brand, .navbar-brand strong {
-    color: #fff !important;
-    text-shadow: 0 2px 10px rgba(30,35,65,0.25), 0 1px 1px rgba(0,0,0,0.16);
-    font-weight: 700;
-    font-size: 1.36rem;
-    letter-spacing: 0.02em;
+.navbar-brand,
+.navbar-brand strong {
+  color: #fff !important;
+  text-shadow: 0 2px 10px rgba(30, 35, 65, 0.25), 0 1px 1px rgba(0, 0, 0, 0.16);
+  font-weight: 700;
+  font-size: 1.36rem;
+  letter-spacing: 0.02em;
 }
 
-/* Card styles */
+/* === Cards === */
 .card {
-    background: #232544;
-    border-radius: 1.25rem;
-    border: 1px solid #2e385b;
-    color: #f1effa;
+  background: #232544;
+  border-radius: 1.25rem;
+  border: 1px solid #2e385b;
+  color: #f1effa;
 }
 
-/* Button styles */
+/* === Buttons === */
 .btn-primary {
-    background: linear-gradient(90deg, #3d157f 30%, #a91860 100%);
-    border: none;
-    color: #fff !important;
+  background: linear-gradient(90deg, #3d157f 30%, #a91860 100%);
+  border: none;
+  color: #fff !important;
 }
 .btn-primary:hover {
-    background: linear-gradient(60deg, #a91860 10%, #3d157f 100%);
-    color: #fff !important;
+  background: linear-gradient(60deg, #a91860 10%, #3d157f 100%);
+  color: #fff !important;
 }
 .btn-info {
-    background: #304ef5;
-    color: #fff;
-    border: none;
+  background: #304ef5;
+  color: #fff;
+  border: none;
 }
 
-/* Form input focus styles */
+/* === Forms === */
 input.form-control:focus {
-    border-color: #7C3AED;
-    box-shadow: 0 0 0 0.12rem #7C3AED99;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 0.12rem #7c3aed99;
 }
 
-/* Alerts */
+/* === Alerts === */
 .alert-danger {
-    background: #530317;
-    color: #fff;
+  background: #530317;
+  color: #fff;
 }
 .alert-success {
-    background: #401974;
-    color: #fff;
+  background: #401974;
+  color: #fff;
 }
 
-/* Glassmorphism header */
+/* === Glass Header and Footer === */
 .glass-header {
-    width: 100%;
-    background: rgba(22,26,38,0.72) !important;
-    box-shadow: 0 1px 14px 0 rgba(20,30,80,0.15);
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
-    border-bottom: none;
-    color: #d1e8ff;
-    border-radius: 0;
-    z-index: 1040;
-    box-sizing: border-box;
-    margin: 0;
+  background: rgba(22, 26, 38, 0.72) !important;
+  box-shadow: 0 1px 14px 0 rgba(20, 30, 80, 0.15);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+  color: #d1e8ff;
+  z-index: 1040;
 }
-
-/* Glassmorphism footer */
 .glass-footer {
-    width: 100%;
-    background: rgba(20,30,45,0.42);
-    box-shadow: 0 8px 32px 0 rgba(19, 24, 41, 0.26);
-    backdrop-filter: blur(14px) saturate(110%);
-    -webkit-backdrop-filter: blur(14px) saturate(110%);
-    border-top: 1.5px solid rgba(130,130,185,0.09);
-    color: #d1e8ff;
-    letter-spacing: 0.08em;
-    border-radius: 1.25rem 1.25rem 0 0;
-    margin: 0;
-    z-index: 100;
-    font-size: 1rem;
+  background: rgba(20, 30, 45, 0.42);
+  box-shadow: 0 8px 32px 0 rgba(19, 24, 41, 0.26);
+  backdrop-filter: blur(14px) saturate(110%);
+  -webkit-backdrop-filter: blur(14px) saturate(110%);
+  border-top: 1.5px solid rgba(130, 130, 185, 0.09);
+  color: #d1e8ff;
+  border-radius: 1.25rem 1.25rem 0 0;
 }
 
-/* Remove double border with Bootstrap */
-.footer, .glass-footer {
-    border-bottom: none;
+/* === Links === */
+a,
+.btn-link {
+  color: #c3bfff !important;
 }
-
-/* Link and Button link styles */
-a, .btn-link {
-    color: #C3BFFF !important;
+.signup-login-link,
+.login-link {
+  font-weight: 600;
+  text-decoration: underline;
 }
-.btn.btn-primary {
-    color: #fff !important;
-}
-
-/* Login/signup links */
 .signup-login-link {
-    color: #98e0fa !important;
-    font-weight: 600;
-    text-decoration: underline;
+  color: #98e0fa !important;
 }
-.signup-login-link:hover {
-    color: #C3BFFF !important;
+.signup-login-link:hover,
+.login-link:hover {
+  color: #c3bfff !important;
 }
 .login-link {
-    color: #7f8aa8 !important;
-    font-weight: 600;
-    text-decoration: underline;
-}
-.login-link:hover {
-    color: #C3BFFF !important;
+  color: #7f8aa8 !important;
 }
 
-/* Hero section adjustments */
+/* === Hero Section === */
 .home-hero-adjust {
-    min-height: 100vh;
-    padding-top: 0vh;
-    padding-bottom: 18vh;
+  min-height: 100vh;
+  padding-bottom: 18vh;
 }
-.home-title, h1 {
-    color: #fff !important;
-    text-shadow: 0 3px 16px rgba(0,0,0,0.26);
+.home-title,
+h1 {
+  color: #fff !important;
+  text-shadow: 0 3px 16px rgba(0, 0, 0, 0.26);
 }
-.home-lead, .lead, p {
-    color: #fff !important;
-    text-shadow: 0 2px 10px rgba(30,40,100,0.14);
+.home-lead,
+.lead,
+p {
+  color: #fff !important;
+  text-shadow: 0 2px 10px rgba(30, 40, 100, 0.14);
+}
+
+/* === Frosted Glass Utility Class === */
+.frosted-glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: black !important;
+}
+.frosted-glass * {
+  color: black !important;
+}
+
+/* === Table Styling === */
+.table.frosted-glass {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 1rem;
+  overflow: hidden;
+  color: black !important;
+}
+.table.frosted-glass th,
+.table.frosted-glass td {
+  background-color: transparent;
+  padding: 0.75rem 1.2rem;
+  font-size: 0.95rem;
+  vertical-align: middle;
+  color: black;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.table.frosted-glass thead {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+.table.frosted-glass tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* === Chart Axis Styling === */
+.chartjs-x-axis-title,
+.chartjs-y-axis-title {
+  color: purple !important;
+  font-size: 14px !important;
+  font-weight: normal !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
 }
