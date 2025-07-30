@@ -87,7 +87,7 @@ def admin_dashboard():
         bookings = Reservation.query.filter_by(user_id=user.id).all()
         for booking in bookings:
             if booking.end_time:  # only if finished
-                duration = (booking.end_time - booking.start_time).total_seconds() / 3600
+                duration = ceil((booking.end_time - booking.start_time).total_seconds() / 3600)
                 rate = booking.spot.parking_lot.prices  # price per hour
                 total_payment += duration * rate
         user_payments[user.id] = round(total_payment, 2)
