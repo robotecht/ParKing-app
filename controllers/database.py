@@ -26,7 +26,7 @@ class ParkingLot(db.Model):
     pincode = db.Column(db.String(10), nullable=False)
     max_spots = db.Column(db.Integer, nullable=False)
 
-    # Cascade delete all spots when lot is deleted
+    # Delete all spots when lot is deleted
     spots = db.relationship('ParkingSpot', backref='parking_lot', cascade='all, delete-orphan', lazy=True)
 
 class ParkingSpot(db.Model):
@@ -35,7 +35,7 @@ class ParkingSpot(db.Model):
     spot_number = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(1), nullable=False, default='A')
 
-    # Cascade delete all reservations when spot is deleted
+    # Delete all reservations when spot is deleted
     reservations = db.relationship('Reservation', backref='spot', cascade='all, delete-orphan', lazy=True)
 
 class Reservation(db.Model):

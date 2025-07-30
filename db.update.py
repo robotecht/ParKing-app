@@ -1,4 +1,6 @@
 # db.update.py
+# This script populates the database with initial parking lot and spot data.
+# It creates 3 parking lots, each with 10 parking spots.
 from app import app
 from controllers.database import db, ParkingLot, ParkingSpot
 

@@ -12,7 +12,7 @@ app.config['DEBUG'] = True
 # Initialize the database
 db.init_app(app)
 
-# Ensure tables are created BEFORE handling the first request
+# Ensure tables are created befor handling the first request
 with app.app_context():
     db.create_all()
     print("Database tables created.")
@@ -92,7 +92,7 @@ def admin_dashboard():
                 total_payment += duration * rate
         user_payments[user.id] = round(total_payment, 2)
 
-    # Get selected user ID from query parameters
+    # Get selected user ID from query
     user_id = request.args.get('user_id')
     selected_user = None
     user_bookings = []
