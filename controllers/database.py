@@ -14,7 +14,6 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     current_booking_id = db.Column(db.Integer, nullable=False, default=0)
-
     # Relationship to reservations
     reservations = db.relationship('Reservation', backref='user', cascade='all, delete-orphan', lazy=True)
 
@@ -25,7 +24,6 @@ class ParkingLot(db.Model):
     address = db.Column(db.String(200), nullable=False)
     pincode = db.Column(db.String(10), nullable=False)
     max_spots = db.Column(db.Integer, nullable=False)
-
     # Delete all spots when lot is deleted
     spots = db.relationship('ParkingSpot', backref='parking_lot', cascade='all, delete-orphan', lazy=True)
 
@@ -34,7 +32,6 @@ class ParkingSpot(db.Model):
     lot_id = db.Column(db.Integer, db.ForeignKey('parking_lot.id'), nullable=False)
     spot_number = db.Column(db.Integer, nullable=False)
     status = db.Column(db.String(1), nullable=False, default='A')
-
     # Delete all reservations when spot is deleted
     reservations = db.relationship('Reservation', backref='spot', cascade='all, delete-orphan', lazy=True)
 
