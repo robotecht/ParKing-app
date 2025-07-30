@@ -1,0 +1,235 @@
+openapi: 3.0.0
+info:
+  title: ParKing app API
+  version: "1.0.0"
+  description: API definition for the Parking Lot Booking Web Application developed for IITM Application Development 1 Project, May 2025.
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /signup:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "john"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - username
+                - password
+      responses:
+        '302':
+          description: Redirect to login after successful registration
+        '400':
+          description: Invalid input
+
+  /login:
+    post:
+      summary: Login as a user
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "john"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - username
+                - password
+      responses:
+        '302':
+          description: Redirect to user dashboard on success
+        '400':
+          description: Invalid input
+
+  /logout:
+    get:
+      summary: Logout current user
+      responses:
+        '302':
+          description: Redirect to login page
+
+  /user_dashboard:
+    get:
+      summary: See current user's dashboard (protected)
+      responses:
+        '200':
+          description: Dashboard HTML
+
+  /book_lot/{lot_id}:
+    get:
+      summary: Book a spot in the specified lot (redirect to spot selection)
+      parameters:
+        - in: path
+          name: lot_id
+          schema:
+            type: integer
+          required: true
+          description: ID of the parking lot
+      responses:
+        '302':
+          description: Redirect to spot booking or user dashboard
+
+  /book_spot/{spot_id}:
+    get:
+      summary: Get booking confirmation page for spot
+      parameters:
+        - in: path
+          name: spot_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Booking confirmation HTML
+
+    post:
+      summary: Book the spot and create reservation
+      parameters:
+        - in: path
+          name: spot_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '302':
+          description: Redirect to user dashboard
+
+  /finish_parking/{booking_id}:
+    post:
+      summary: Finish a user's parking session
+      parameters:
+        - in: path
+          name: booking_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '302':
+          description: Redirect to user dashboard after finishing parking session
+
+  /admin/login:
+    post:
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '302':
+          description: Redirect to admin dashboard on success
+
+  /admin/logout:
+    get:
+      summary: Logout current admin
+      responses:
+        '302':
+          description: Redirect to admin login
+
+  /admin/dashboard:
+    get:
+      summary: Admin dashboard (protected)
+      responses:
+        '200':
+          description: Admin dashboard HTML
+
+  /admin/lot/add:
+    post:
+      summary: Add a new parking lot (admin only)
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                address:
+                  type: string
+                pincode:
+                  type: string
+                prices:
+                  type: number
+                max_spots:
+                  type: integer
+              required:
+                - location
+                - address
+                - pincode
+                - prices
+                - max_spots
+      responses:
+        '302':
+          description: Redirect to admin dashboard
+
+  /admin/lot/{lot_id}/edit:
+    post:
+      summary: Edit parking lot details (admin only)
+      parameters:
+        - in: path
+          name: lot_id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: false
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                address:
+                  type: string
+                pincode:
+                  type: string
+                prices:
+                  type: number
+                max_spots:
+                  type: integer
+      responses:
+        '302':
+          description: Redirect to admin dashboard
+
+  /admin/lot/{lot_id}/delete:
+    post:
+      summary: Delete a parking lot (admin only)
+      parameters:
+        - in: path
+          name: lot_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '302':
+          description: Redirect to admin dashboard
+
+components:
+  securitySchemes: {password hashing, http basic auth, csrf protection}
