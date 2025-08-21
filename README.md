@@ -41,7 +41,7 @@ git clone git@github.com:robotecht/ParKing-app.git
 cd ParKing-app
 python -m venv venv
 ```
-**Activate your Virtual Environment**
+**Activate the Virtual Environment**
 
 - On Linux
 ```bash
